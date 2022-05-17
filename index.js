@@ -2,9 +2,9 @@ const express = require("express");
 const supertokens = require("supertokens-node");
 const cors = require('cors')
 const Session = require("supertokens-node/recipe/session");
-const EmailPassword = require("supertokens-node/recipe/emailpassword");
 const { middleware } =  require("supertokens-node/framework/express");
-
+const ThirdPartyEmailPassword = require("supertokens-node/recipe/thirdpartyemailpassword");
+let { Google, Github, Facebook, Apple } = ThirdPartyEmailPassword;
 const app = express();
 
 supertokens.init({
@@ -19,7 +19,33 @@ supertokens.init({
     apiBasePath: '/api/auth',
     websiteBasePath: '/auth'
     },
-    recipeList: [EmailPassword.init(), Session.init()]
+    recipeList: [
+        ThirdPartyEmailPassword.init({
+            providers: [
+                Google({
+                    clientSecret: "TODO: GOOGLE_CLIENT_SECRET",
+                    clientId: "TODO: GOOGLE_CLIENT_ID"
+                }),
+                Github({
+                    clientSecret: "TODO: GITHUB_CLIENT_SECRET",
+                    clientId: "TODO: GITHUB_CLIENT_ID"
+                }),
+                Facebook({
+                    clientSecret: "TODO: FACEBOOK_CLIENT_SECRET",
+                    clientId: "TODO: FACEBOOK_CLIENT_ID"
+                }),
+                // Apple({
+                //     clientSecret: {
+                //         teamId: "APPLE_TEAM_ID",
+                //         privateKey: "APPLE_PRIVATE_KEY",
+                //         keyId: "KEY_ID"
+                //     },
+                //     clientId: "APPLE_CLIENT_ID"
+                // })
+            ]
+        }),
+        Session.init()
+    ]
 })
 
 app.use(cors({
